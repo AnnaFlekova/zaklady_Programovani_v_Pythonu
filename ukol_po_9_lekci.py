@@ -2,8 +2,8 @@
 import json
 import requests
 
-input ("Zadejte IČO subjektu, o kterém chcete získat informace:")
-ICO = input
+
+ICO = input("Zadejte IČO subjektu, o kterém chcete získat informace:")
 response = requests.get(f"https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/{ICO}")
 
 if response.text and response.status_code == 200:
@@ -11,7 +11,7 @@ if response.text and response.status_code == 200:
 
 
 obchodniJmeno = data.get('obchodniJmeno')
-textovaAdresa = data.get('textovaAdresa')
+textovaAdresa = data.get("sidlo").get('textovaAdresa')
 
 print( f"{obchodniJmeno}, {textovaAdresa}")
 
@@ -23,16 +23,17 @@ headers = {
     "Content-Type": "application/json",
 }
 
-input("Název subjektu, který chcete vyhledat: ")
-nazev_subjektu = input
+nazev_subjektu = input("Název subjektu, který chcete vyhledat: ")
 
 data ={"obchodniJmeno": nazev_subjektu}
-res = requests.post("https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/vyhledat", headers=headers, data=data)
+res = requests.post("https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/vyhledat", headers=headers, json=data)
 subjekty = res.json()
-pocet_subjektu = len(subjekty)
 
-print(f"Nalezeno {pocet_subjektu} subjektů:\n")
+pocet_celkem = subjekty["pocetCelkem"]
+print(f"Nalezeno {pocet_celkem} subjektů:\n")
 
-for subjekt in subjekty:
-    
+
+ekonomicke_subjekty = subjekty["ekonomickeSubjekty"]
+for subjekt in ekonomicke_subjekty:
+
     print(f"{subjekt['obchodniJmeno']}, {subjekt['ico']}")
